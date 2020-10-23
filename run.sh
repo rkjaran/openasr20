@@ -32,3 +32,7 @@ if [ $stage -le 1 ]; then
      steps/compute_cmvn_stats.sh data/${lang}_${x} exp/log/make_mfcc exp/mfcc || exit 1;
    done
 fi
+
+if [ $stage -le 2 ]; then
+  local/prep_lang.py --corpus-dir $data --lang $lang --dst data/
+fi
