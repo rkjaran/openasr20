@@ -17,6 +17,10 @@ src=$1
 lang=$2
 dst=$3
 
+function check_audio2trans {
+   cat $1 | cut -d'_' -f5- | sed 's|\..*||' | cmp -s - <(cat $2 | cut -d'_' -f5- | sed 's|\..*||')
+}
+
 for subset in build dev; do
    echo "Processing $src/$lang/$subset"
 
@@ -28,6 +32,11 @@ for subset in build dev; do
    # Some prep
    find $src/$lang/$subset/audio -type f | sort > $dst_sub/tmp/audio.lst
    find $src/$lang/$subset/transcription -type f | sort > $dst_sub/tmp/trans.lst
+
+#   if ! check_audio2trans $dst_sub/tmp/audio.lst $dst_sub/tmp/trans.lst; then
+#      echo "Error: $dst_sub/tmp/audio.lst do not match $dst_sub/tmp/trans.lst"
+#      exit 1;
+#   fi
 
    # wav.scp
    while IFS= read -r line; do
@@ -48,7 +57,7 @@ for subset in build dev; do
       while IFS= read -r line; do
          if [[ $line =~ "[" ]]; then
             end=$(echo $line| sed -e 's/\[\(.*\)\]/\1/')
-            if  ! [[ $text == "<no-speech>" ]]; then
+            if  ! [[ $text == "<no-speech>" ]] && ! [[ $text == "(())" ]] ; then
                 echo ${utt}_$(printf "%03d" $idx) $utt $beg $end $text
                 let "idx+=1"
             fi
