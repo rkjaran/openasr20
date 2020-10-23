@@ -45,7 +45,7 @@ def create_langdir(args):
     subset = "build"
     for d in (dictdir, langdir):
         if d.exists() and not args.overwrite:
-            raise OSError("Directory {} exists, not overwriting!")
+            raise OSError("Directory {} exists, not overwriting!".format(d))
         d.mkdir(parents=True, exist_ok=True)
 
     silence_phones = {"sil", "spn"}

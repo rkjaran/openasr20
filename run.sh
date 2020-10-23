@@ -34,5 +34,6 @@ if [ $stage -le 1 ]; then
 fi
 
 if [ $stage -le 2 ]; then
-  local/prep_lang.py --corpus-dir $data --lang $lang --dst data/
+  local/prep_lang.sh $data $lang data/
 fi
+
