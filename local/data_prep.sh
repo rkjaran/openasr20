@@ -17,7 +17,7 @@ src=$1
 lang=$2
 dst=$3
 
-function check_audio2trans {
+function check_audio2trans() {
    cat $1 | cut -d'_' -f5- | sed 's|\..*||' | cmp -s - <(cat $2 | cut -d'_' -f5- | sed 's|\..*||')
 }
 
@@ -57,7 +57,8 @@ for subset in build dev; do
       while IFS= read -r line; do
          if [[ $line =~ "[" ]]; then
             end=$(echo $line| sed -e 's/\[\(.*\)\]/\1/')
-            if  ! [[ $text == "<no-speech>" ]] && ! [[ $text == "(())" ]] ; then
+            clean_text=$(echo $text | sed 's|<.*>||g' | sed 's|(.*)||' | tr -s " ")
+            if  ! [[ $clean_text == "" ]]; then
                 echo ${utt}_$(printf "%03d" $idx) $utt $beg $end $text
                 let "idx+=1"
             fi
