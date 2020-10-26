@@ -62,7 +62,7 @@ if [ $stage -le 4 ]; then
   steps/align_si.sh --nj $nj --cmd "$train_cmd" \
                     data/${lang}_build data/lang_$lang \
                     exp/$lang/mono exp/$lang/mono_ali || exit 1
-  steps/train_deltas.sh --nj $nj --cmd "$train_cmd" \
+  steps/train_deltas.sh --cmd "$train_cmd" \
                         2000 20000 \
                         data/${lang}_build data/lang_$lang \
                         exp/$lang/mono_ali exp/$lang/tri1 || exit 1
@@ -75,7 +75,7 @@ if [ $stage -le 5 ]; then
   steps/align_si.sh --nj $nj --cmd "$train_cmd" \
                     data/${lang}_build data/lang_$lang \
                     exp/$lang/tri1 exp/$lang/tri1_ali || exit 1
-  steps/train_lda_mllt.sh --nj $nj --cmd "$train_cmd" \
+  steps/train_lda_mllt.sh --cmd "$train_cmd" \
                           --splice-opts "--left-context=5 --right-context=5" \
                           4000 50000 \
                           data/${lang}_build data/lang_$lang \
