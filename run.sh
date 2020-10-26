@@ -11,6 +11,7 @@ work_dir=/home/staff/borsky/OpenASR2020/s5
 lang="openasr20_amharic"
 stage=0
 nj=1
+prep_lang_opts=
 
 . ./cmd.sh
 . ./path.sh
@@ -34,7 +35,7 @@ if [ $stage -le 1 ]; then
 fi
 
 if [ $stage -le 2 ]; then
-  local/prep_lang.sh $data $lang data/
+  local/prep_lang.sh $prep_lang_opts $data $lang data/
 fi
 
 if [ $stage -le 3 ]; then
@@ -83,10 +84,10 @@ if [ $stage -le 5 ]; then
   utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/tri2 \
                    exp/$lang/tri2/graph_2g || exit 1
 
-  for dset in build dev; do
+  for dset in dev; do
     steps/decode.sh --nj $nj --cmd "$decode_cmd" \
-                    exp/$lang/mono/graph_2g data/${lang}_$dset \
-                    exp/$lang/mono/decode_2g_$dset &
+                    exp/$lang/tri2/graph_2g data/${lang}_$dset \
+                    exp/$lang/tri2/decode_2g_$dset &
   done
 fi
 

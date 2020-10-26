@@ -13,3 +13,4 @@ $PWD/steps:\
 $KALDI_ROOT/tools/sph2pipe_v2.5:\
 $PATH
 export SCRATCH_ROOT=/export/lr02/fast/work/openasr20
+export LC_ALL=C

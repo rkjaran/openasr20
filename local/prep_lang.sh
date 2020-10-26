@@ -2,6 +2,7 @@
 set -eu -o pipefail
 
 use_roman=false
+overwrite=false
 stage=0
 
 help_message="Usage $0 <corpus-dir> <lang> <dst-dir>
@@ -32,6 +33,10 @@ dst=$3
 additonal_opts=
 if $use_roman; then
   additonal_opts="$additonal_opts --use-roman"
+fi
+
+if $overwrite; then
+  additonal_opts="$additonal_opts --overwrite"
 fi
 
 if [ $stage -le 0 ]; then
