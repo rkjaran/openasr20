@@ -6,7 +6,6 @@ This script sets up symlinks to a scratch directories and common Kaldi scripts.
 "
 
 . ./path.sh
-. ./utils/parse_options.sh
 
 echo "Setting up symlinks" >&2
 
