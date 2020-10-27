@@ -1,6 +1,8 @@
 #!/bin/bash
 # Init of a run script
 
+echo "$0 $@" >&2
+
 if [[ $(hostname) == lr* ]]; then
   data=/export/lr01/lr-backup/corpora/openasr2020
 else
@@ -13,6 +15,8 @@ stage=0
 nj=1
 prep_lang_opts=
 use_pitch=false
+
+tdnn_stage=0
 
 . ./cmd.sh
 . ./path.sh
@@ -94,6 +98,54 @@ if [ $stage -le 5 ]; then
                     exp/$lang/tri2/graph_2g data/${lang}_$dset \
                     exp/$lang/tri2/decode_2g_$dset &
   done
+fi
+
+if [ $stage -le 6 ]; then
+  echo ============================================================================
+  echo "          Train tri3 LDA+MLLT+SAT system                                  "
+  echo ============================================================================
+  steps/align_fmllr.sh --cmd "$train_cmd" --nj $nj \
+                       data/${lang}_build data/lang_$lang \
+                       exp/$lang/tri2 exp/$lang/tri2_ali || exit 1;
+  steps/train_sat.sh --cmd "$train_cmd" \
+                     7000 90000 \
+                     data/${lang}_build data/lang_$lang exp/$lang/tri2_ali \
+                     exp/$lang/tri3 || exit 1;
+
+  (
+    utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/tri3 \
+                     exp/$lang/tri3/graph_2g || exit 1
+    for dset in dev; do
+      steps/decode_fmllr.sh --nj $nj --cmd "$decode_cmd" \
+                            exp/$lang/tri3/graph_2g data/${lang}_$dset \
+                            exp/$lang/tri3/decode_2g_$dset || exit 1
+    done
+  ) &
+fi
+
+if [ $stage -le 7 ]; then
+  # TODO(rkjaran): multilang egs
+  nnet3_affix=$lang
+  gmm=$lang/tri3
+  train_set=${lang}_build
+  test_sets=${lang}_dev
+  langs="default"
+  num_threads_ubm=32
+  src_langdir=data/lang_$lang
+
+  if [[ $(hostname) == lr0* ]]; then
+    num_threads_ubm=4
+  fi
+
+  local/chain2/run_tdnn.sh \
+    --stage $tdnn_stage \
+    --nnet3-affix $nnet3_affix \
+    --gmm $gmm \
+    --train-set $train_set \
+    --test-sets "$test_sets" \
+    --langs "$langs" \
+    --num-threads-ubm $num_threads_ubm \
+    --src-langdir $src_langdir || exit 1
 fi
 
 wait
