@@ -64,6 +64,12 @@ egs_extra_right_context=5
 # to group multiple speaker together in some cases).
 chunks_per_group=4
 
+num_jobs_final=1
+num_jobs_initial=4
+final_effective_lrate=0.001
+initial_effective_lrate=0.01
+
+
 # training options
 srand=0
 remove_egs=true
@@ -180,6 +186,8 @@ mkdir -p $dir/init/
 learning_rate_factor=$(echo "print (0.5/$xent_regularize)" | python)
 
 if [ $stage -le 14 ]; then
+  input_dim=$(feat-to-dim scp:$train_data_dir/feats.scp -)
+  ivector_dim=100
 
   # Note: we'll use --bottom-subsampling-factor=3, so all time-strides for the
   # top network should be interpreted at the 30ms frame subsampling rate.
@@ -187,8 +195,8 @@ if [ $stage -le 14 ]; then
 
   echo "$0: creating top model"
   cat <<EOF > $dir/configs/default.xconfig
-  input dim=100 name=ivector
-  input dim=40 name=input
+  input dim=$ivector_dim name=ivector
+  input dim=$input_dim name=input
 
   # please note that it is important to have input layer with the name=input
   # as the layer immediately preceding the fixed-affine-layer to enable
@@ -200,12 +208,14 @@ if [ $stage -le 14 ]; then
   relu-renorm-layer name=tdnn2 dim=512 input=Append(-1,0,1)
   relu-renorm-layer name=tdnn3 dim=512 input=Append(-1,0,1)
   relu-renorm-layer name=tdnn4 dim=512 input=Append(-3,0,3)
+
   # relu-renorm-layer name=tdnn5 dim=512 input=Append(-3,0,3)
   # relu-renorm-layer name=tdnn6 dim=512 input=Append(-6,-3,0)
+
   relu-renorm-layer name=prefinal-chain dim=512 target-rms=0.5
   output-layer name=output include-log-softmax=false dim=$num_leaves max-change=1.5
   output-layer name=output-default input=prefinal-chain include-log-softmax=false dim=$num_leaves max-change=1.5
-  relu-renorm-layer name=prefinal-xent input=tdnn6 dim=512 target-rms=0.5
+  relu-renorm-layer name=prefinal-xent input=tdnn4 dim=512 target-rms=0.5
   output-layer name=output-xent dim=$num_leaves learning-rate-factor=$learning_rate_factor max-change=1.5
   output-layer name=output-default-xent input=prefinal-xent dim=$num_leaves learning-rate-factor=$learning_rate_factor max-change=1.5
 EOF
@@ -341,8 +351,9 @@ if [ $stage -le 22 ]; then
     --stage $train_stage --cmd "$cuda_cmd" \
     --xent-regularize $xent_regularize --leaky-hmm-coefficient 0.1 \
     --max-param-change 2.0 \
-    --num-jobs-initial 2 --num-jobs-final 5 \
-    --groups-per-minibatch 256,128,64 \
+    --num-jobs-initial $num_jobs_initial --num-jobs-final $num_jobs_final \
+    --initial-effective-lrate $initial_effective_lrate \
+    --final-effective-lrate $final_effective_lrate \
      $dir/egs $dir || exit 1;
 fi
 
@@ -369,7 +380,7 @@ if [ $stage -le 24 ]; then
           --frames-per-chunk $frames_per_chunk \
           --nj $nspk --cmd "$decode_cmd"  --num-threads 4 \
           --online-ivector-dir exp/nnet3${nnet3_affix}/ivectors_${data}_hires \
-          $tree_dir/graph_2g data/${data}_hires ${dir}/decode_${data}_2g || exit 1
+          $tree_dir/graph_2g data/${data}_hires ${dir}/decode_2g_${data} || exit 1
       # steps/lmrescore_const_arpa.sh --cmd "$decode_cmd" \
       #   data/lang_test_{tgsmall,tglarge} \
       #  data/${data}_hires ${dir}/decode_{tgsmall,tglarge}_${data} || exit 1

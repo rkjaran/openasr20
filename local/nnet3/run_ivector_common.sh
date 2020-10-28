@@ -31,6 +31,8 @@ nnet3_affix=             # affix for exp/nnet3 directory to put iVector stuff in
 use_pitch=false
 src_langdir=
 
+echo "$0 $@" >&2  # Print the command line for logging
+
 . ./cmd.sh
 . ./path.sh
 . utils/parse_options.sh
@@ -40,9 +42,9 @@ gmm_dir=exp/${gmm}
 ali_dir=exp/${gmm}_ali_${train_set}_sp
 
 mfcc_cmd=steps/make_mfcc.sh
-if $use_pitch; do
+if $use_pitch; then
   mfcc_cmd=steps/make_mfcc_pitch.sh
-done
+fi
 
 for f in data/${train_set}/feats.scp ${gmm_dir}/final.mdl; do
   if [ ! -f $f ]; then
