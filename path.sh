@@ -16,5 +16,6 @@ if [[ $(hostname) == lr01* ]] || [[ $(hostname) == lr02* ]]; then
    export SCRATCH_ROOT=/export/lr02/fast/work/openasr20
 else
    export SCRATCH_ROOT=/scratch/borsky/openasr20
+   export PATH="/opt/kenlm/build/bin/":$PATH
 fi
 export LC_ALL=C

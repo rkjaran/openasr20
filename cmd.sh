@@ -20,6 +20,7 @@ if [[ $(hostname) == lr01* ]] || [[ $(hostname) == lr02* ]]; then
   conf_opts="--config conf/slurm_tiro.conf"
 else
   export mfcc_cmd="utils/slurm.pl"
+  conf_opts="--config conf/slurm.conf"
 fi
 export online_decode_cmd="utils/slurm.pl $conf_opts"
 export train_cmd="utils/slurm.pl --mem 1G $conf_opts"
