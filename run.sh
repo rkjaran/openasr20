@@ -15,6 +15,7 @@ stage=0
 nj=1
 prep_lang_opts=
 use_pitch=false
+do_decode=false
 
 tdnn_stage=0
 
@@ -54,14 +55,16 @@ echo ===========================================================================
 
   steps/train_mono.sh --nj $nj --cmd "$train_cmd" \
                       data/${lang}_build data/lang_$lang exp/$lang/mono || exit 1
-  utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/mono \
-                   exp/$lang/mono/graph_2g || exit 1
+  if $do_decode; then
+    utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/mono \
+                     exp/$lang/mono/graph_2g || exit 1
 
-  for dset in build dev; do
-    steps/decode.sh --nj $nj --cmd "$decode_cmd" \
-                    exp/$lang/mono/graph_2g data/${lang}_$dset \
-                    exp/$lang/mono/decode_2g_$dset &
-  done
+    for dset in dev; do
+      steps/decode.sh --nj $nj --cmd "$decode_cmd" \
+                      exp/$lang/mono/graph_2g data/${lang}_$dset \
+                      exp/$lang/mono/decode_2g_$dset &
+    done
+  fi
 fi
 
 if [ $stage -le 4 ]; then
@@ -90,14 +93,16 @@ if [ $stage -le 5 ]; then
                           data/${lang}_build data/lang_$lang \
                           exp/$lang/tri1_ali exp/$lang/tri2 || exit 1
 
-  utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/tri2 \
-                   exp/$lang/tri2/graph_2g || exit 1
+  if $do_decode; then
+    utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/tri2 \
+                     exp/$lang/tri2/graph_2g || exit 1
 
-  for dset in dev; do
-    steps/decode.sh --nj $nj --cmd "$decode_cmd" \
+    for dset in dev; do
+      steps/decode.sh --nj $nj --cmd "$decode_cmd" \
                     exp/$lang/tri2/graph_2g data/${lang}_$dset \
                     exp/$lang/tri2/decode_2g_$dset &
-  done
+    done
+  fi
 fi
 
 if [ $stage -le 6 ]; then
@@ -112,15 +117,17 @@ if [ $stage -le 6 ]; then
                      data/${lang}_build data/lang_$lang exp/$lang/tri2_ali \
                      exp/$lang/tri3 || exit 1;
 
-  (
-    utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/tri3 \
-                     exp/$lang/tri3/graph_2g || exit 1
-    for dset in dev; do
-      steps/decode_fmllr.sh --nj $nj --cmd "$decode_cmd" \
-                            exp/$lang/tri3/graph_2g data/${lang}_$dset \
-                            exp/$lang/tri3/decode_2g_$dset || exit 1
-    done
-  ) &
+  if $do_decode; then
+    (
+      utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/tri3 \
+                       exp/$lang/tri3/graph_2g || exit 1
+      for dset in dev; do
+        steps/decode_fmllr.sh --nj $nj --cmd "$decode_cmd" \
+                              exp/$lang/tri3/graph_2g data/${lang}_$dset \
+                              exp/$lang/tri3/decode_2g_$dset || exit 1
+      done
+    ) &
+  fi
 fi
 
 if [ $stage -le 7 ]; then
@@ -145,6 +152,7 @@ if [ $stage -le 7 ]; then
     --test-sets "$test_sets" \
     --langs "$langs" \
     --num-threads-ubm $num_threads_ubm \
+    --use-pitch $use_pitch \
     --src-langdir $src_langdir || exit 1
 fi
 
