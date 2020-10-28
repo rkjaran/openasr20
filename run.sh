@@ -12,6 +12,7 @@ lang="openasr20_amharic"
 stage=0
 nj=1
 prep_lang_opts=
+use_pitch=false
 
 . ./cmd.sh
 . ./path.sh
@@ -28,10 +29,14 @@ if [ $stage -le 0 ]; then
 fi
 
 if [ $stage -le 1 ]; then
-   for x in build dev; do
-     steps/make_mfcc.sh --cmd "$train_cmd" --nj $nj data/${lang}_${x} exp/log/make_mfcc exp/mfcc || exit 1;
-     steps/compute_cmvn_stats.sh data/${lang}_${x} exp/log/make_mfcc exp/mfcc || exit 1;
-   done
+  make_mfcc_cmd=steps/make_mfcc.sh
+  if $use_pitch; then
+    make_mfcc_cmd=steps/make_mfcc_pitch.sh
+  fi
+  for x in build dev; do
+    $make_mfcc_cmd --cmd "$train_cmd" --nj $nj data/${lang}_${x} exp/log/make_mfcc exp/mfcc || exit 1;
+    steps/compute_cmvn_stats.sh data/${lang}_${x} exp/log/make_mfcc exp/mfcc || exit 1;
+  done
 fi
 
 if [ $stage -le 2 ]; then

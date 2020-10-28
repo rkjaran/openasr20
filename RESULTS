@@ -1,0 +1,14 @@
+# Results with MFCC feats
+%WER 89.96 [ 101136 / 112419, 3177 ins, 35304 del, 62655 sub ] exp/openasr20_cantonese/mono/decode_2g_dev/wer_9_0.0
+%WER 85.56 [ 97687 / 114170, 3152 ins, 34956 del, 59579 sub ] exp/openasr20_cantonese/mono/decode_2g_build/wer_9_0.0
+%WER 80.34 [ 90320 / 112419, 4167 ins, 29822 del, 56331 sub ] exp/openasr20_cantonese/tri2/decode_2g_dev/wer_15_0.5
+%WER 76.13 [ 53606 / 70414, 1357 ins, 23274 del, 28975 sub ] exp/openasr20_amharic/mono/decode_2g_build/wer_11_0.0
+%WER 74.71 [ 54521 / 72979, 2517 ins, 18076 del, 33928 sub ] exp/openasr20_amharic/tri2/decode_2g_dev/wer_15_0.5
+
+# Results with mfcc+pitch
+%WER 90.35 [ 101575 / 112419, 3111 ins, 35122 del, 63342 sub ] exp/openasr20_cantonese/mono/decode_2g_dev/wer_9_0.0
+%WER 85.53 [ 97651 / 114170, 3033 ins, 34870 del, 59748 sub ] exp/openasr20_cantonese/mono/decode_2g_build/wer_9_0.0
+%WER 80.38 [ 90357 / 112419, 4572 ins, 28691 del, 57094 sub ] exp/openasr20_cantonese/tri2/decode_2g_dev/wer_14_0.5
+%WER 88.84 [ 64836 / 72979, 1573 ins, 25835 del, 37428 sub ] exp/openasr20_amharic/mono/decode_2g_dev/wer_11_0.0
+%WER 76.24 [ 53684 / 70414, 1275 ins, 23496 del, 28913 sub ] exp/openasr20_amharic/mono/decode_2g_build/wer_11_0.0
+%WER 74.45 [ 54332 / 72979, 2582 ins, 18033 del, 33717 sub ] exp/openasr20_amharic/tri2/decode_2g_dev/wer_17_0.0
