@@ -7,3 +7,5 @@
 
 # Results with MFCC+pitch
 %WER 68.78 [ 70297 / 102213, 3591 ins, 28955 del, 37751 sub ] exp/chain2openasr20_cantonese/tdnn1a_sp/decode_2g_openasr20_cantonese_dev/wer_10_0.0
+%WER 64.93 [ 45941 / 70760, 2163 ins, 17012 del, 26766 sub ] exp/chain2openasr20_amharic/tdnn1a_sp/decode_2g_openasr20_amharic_dev/wer_13_0.0
+%WER 89.03 [ 66768 / 74997, 1612 ins, 35584 del, 29572 sub ] exp/chain2openasr20_javanese/tdnn1a_sp/decode_2g_openasr20_javanese_dev/wer_7_0.0
