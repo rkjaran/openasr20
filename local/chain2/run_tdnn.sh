@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# This script was copied from ^kaldi/egs/mini_librispeech/s5/local/chain2/run_tdnn.sh
+# This script was copied and modified from
+# ^kaldi/egs/mini_librispeech/s5/local/chain2/run_tdnn.sh
 #
 # Copyright 2019 Srikanth Madikeri (Idiap Research Institute)
 #

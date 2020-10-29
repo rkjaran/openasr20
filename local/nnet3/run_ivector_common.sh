@@ -3,7 +3,8 @@
 set -e -o pipefail
 
 #
-# This script was copied from ^kaldi/egs/mini_librispeech/s5/local/nnet3/run_ivector_common.sh
+# This script was copied and modified from
+# ^kaldi/egs/mini_librispeech/s5/local/nnet3/run_ivector_common.sh
 #
 # This script is called from scripts like local/nnet3/run_tdnn.sh and
 # local/chain/run_tdnn.sh (and may eventually be called by more scripts).  It
