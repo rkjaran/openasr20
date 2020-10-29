@@ -18,6 +18,9 @@ for l in utils steps; do
       echo "Location $l exists in working dir and is not a symbolic link." >&2
       exit 1
     fi
+  else
+    ln -s $KALDI_ROOT/egs/wsj/s5/steps steps
+    ln -s $KALDI_ROOT/egs/wsj/s5/utils utils
   fi
 done
 
@@ -32,8 +35,6 @@ echo "Creating temporary scratch space"
 scratch=$SCRATCH_ROOT/$(date +%s)
 mkdir -p $scratch/{exp,data}
 
-ln -s $KALDI_ROOT/egs/wsj/s5/steps steps
-ln -s $KALDI_ROOT/egs/wsj/s5/utils utils
 ln -s $scratch/exp exp
 ln -s $scratch/data data
 

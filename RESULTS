@@ -5,10 +5,7 @@
 %WER 76.13 [ 53606 / 70414, 1357 ins, 23274 del, 28975 sub ] exp/openasr20_amharic/mono/decode_2g_build/wer_11_0.0
 %WER 74.71 [ 54521 / 72979, 2517 ins, 18076 del, 33928 sub ] exp/openasr20_amharic/tri2/decode_2g_dev/wer_15_0.5
 
-# Results with mfcc+pitch
-%WER 90.35 [ 101575 / 112419, 3111 ins, 35122 del, 63342 sub ] exp/openasr20_cantonese/mono/decode_2g_dev/wer_9_0.0
-%WER 85.53 [ 97651 / 114170, 3033 ins, 34870 del, 59748 sub ] exp/openasr20_cantonese/mono/decode_2g_build/wer_9_0.0
-%WER 80.38 [ 90357 / 112419, 4572 ins, 28691 del, 57094 sub ] exp/openasr20_cantonese/tri2/decode_2g_dev/wer_14_0.5
-%WER 88.84 [ 64836 / 72979, 1573 ins, 25835 del, 37428 sub ] exp/openasr20_amharic/mono/decode_2g_dev/wer_11_0.0
-%WER 76.24 [ 53684 / 70414, 1275 ins, 23496 del, 28913 sub ] exp/openasr20_amharic/mono/decode_2g_build/wer_11_0.0
-%WER 74.45 [ 54332 / 72979, 2582 ins, 18033 del, 33717 sub ] exp/openasr20_amharic/tri2/decode_2g_dev/wer_17_0.0
+# Results with MFCC+pitch
+%WER 68.78 [ 70297 / 102213, 3591 ins, 28955 del, 37751 sub ] exp/chain2openasr20_cantonese/tdnn1a_sp/decode_2g_openasr20_cantonese_dev/wer_10_0.0
+%WER 64.93 [ 45941 / 70760, 2163 ins, 17012 del, 26766 sub ] exp/chain2openasr20_amharic/tdnn1a_sp/decode_2g_openasr20_amharic_dev/wer_13_0.0
+%WER 89.03 [ 66768 / 74997, 1612 ins, 35584 del, 29572 sub ] exp/chain2openasr20_javanese/tdnn1a_sp/decode_2g_openasr20_javanese_dev/wer_7_0.0
