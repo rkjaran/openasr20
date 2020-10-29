@@ -14,7 +14,7 @@ lang="openasr20_amharic"
 stage=0
 nj=1
 prep_lang_opts=
-use_pitch=false
+use_pitch=true
 do_decode=false
 
 tdnn_stage=0
