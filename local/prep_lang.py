@@ -71,6 +71,7 @@ def create_langdir(args):
         "reference_materials" / "lexicon.txt",
         roman=has_roman(args.corpus_dir, args.lang)
     )
+    phone_with_tag_regex = re.compile(r'^(.+)(_[A-Z0-9"])$')
     # TOOD(rkjaran): move to arguments?
     # additional_spn = [
     #     "<breath>",
@@ -96,13 +97,14 @@ def create_langdir(args):
             #     Ban	b_<_1 a:_1 N_1
             # and add the stress marked phonemes to extra_questions.txt, like so:
             #    b_<b_<_1
+            printed_pron_lines = set()
             try:
                 for pron in lexeme["prons"]:
                     new_pron_syllables = []
                     syllable_index = 0
                     syllable_has_stress = False
                     for phone in pron.split():
-                        tag_match = re.match(r"_.", phone)
+                        tag_match = re.match(r'_["0-9A-Z]', phone)
                         if tag_match:
                             new_pron_syllables[syllable_index] = \
                                 [p + tag_match.group(0) for p in
@@ -125,8 +127,11 @@ def create_langdir(args):
                     # #                other_phones. Remove them for now.
                     # for phone in other_phones:
                     #     pron = pron.replace(phone, "")
-                    print("{} {}".format(word, " ".join(new_pron)), file=kaldilex_f)
-                    nonsilence_phones.update(new_pron)
+                    new_pron_line = "{} {}".format(word, " ".join(new_pron))
+                    if new_pron_line not in printed_pron_lines:
+                        nonsilence_phones.update(new_pron)
+                        printed_pron_lines.add(new_pron_line)
+                        print(new_pron_line, file=kaldilex_f)
 
             except:
                 print(lexeme)
@@ -146,7 +151,7 @@ def create_langdir(args):
     with (dictdir / "extra_questions.txt").open('w') as extra_f:
         questions = dict()
         for phone in nonsilence_phones:
-            base_phone = re.sub(r"(.+)(_.)$", r"\1", phone)
+            base_phone = re.sub(phone_with_tag_regex, r"\1", phone)
             if base_phone in questions:
                 questions[base_phone].add(phone)
             else:

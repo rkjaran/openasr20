@@ -6,6 +6,9 @@
 %WER 74.71 [ 54521 / 72979, 2517 ins, 18076 del, 33928 sub ] exp/openasr20_amharic/tri2/decode_2g_dev/wer_15_0.5
 
 # Results with MFCC+pitch
-%WER 68.78 [ 70297 / 102213, 3591 ins, 28955 del, 37751 sub ] exp/chain2openasr20_cantonese/tdnn1a_sp/decode_2g_openasr20_cantonese_dev/wer_10_0.0
-%WER 64.93 [ 45941 / 70760, 2163 ins, 17012 del, 26766 sub ] exp/chain2openasr20_amharic/tdnn1a_sp/decode_2g_openasr20_amharic_dev/wer_13_0.0
-%WER 89.03 [ 66768 / 74997, 1612 ins, 35584 del, 29572 sub ] exp/chain2openasr20_javanese/tdnn1a_sp/decode_2g_openasr20_javanese_dev/wer_7_0.0
+%WER 82.82 [ 63588 / 76780, 1574 ins, 22395 del, 39619 sub ] exp/chain2openasr20_tamil/tdnn1a_sp/decode_2g_openasr20_tamil_dev/wer_11_0.0
+%WER 67.62 [ 50940 / 75329, 2961 ins, 16862 del, 31117 sub ] exp/chain2openasr20_guarani/tdnn1a_sp/decode_2g_openasr20_guarani_dev/wer_12_0.0
+%WER 75.34 [ 56504 / 74997, 2107 ins, 22248 del, 32149 sub ] exp/chain2openasr20_javanese/tdnn1a_sp/decode_2g_openasr20_javanese_dev/wer_11_0.0
+%WER 64.66 [ 45754 / 70760, 2539 ins, 16165 del, 27050 sub ] exp/chain2openasr20_amharic/tdnn1a_sp/decode_2g_openasr20_amharic_dev/wer_12_0.0
+%WER 69.28 [ 70813 / 102213, 3549 ins, 29458 del, 37806 sub ] exp/chain2openasr20_cantonese/tdnn1a_sp/decode_2g_openasr20_cantonese_dev/wer_10_0.0
+%WER 74.35 [ 65855 / 88580, 2534 ins, 23650 del, 39671 sub ] exp/chain2openasr20_somali/tdnn1a_sp/decode_2g_openasr20_somali_dev/wer_11_0.0
