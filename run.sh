@@ -6,16 +6,17 @@ echo "$0 $@" >&2
 if [[ $(hostname) == lr* ]]; then
   data=/export/lr01/lr-backup/corpora/openasr2020
 else
-  data=/home/staff/borsky/OpenASR2020/data
+  data=/home/staff/borsky/OpenASR2020/NIST_data
 fi
 work_dir=/home/staff/borsky/OpenASR2020/s5
 
 lang="openasr20_amharic"
 stage=0
-nj=1
+nj=40
 prep_lang_opts=
 use_pitch=true
-do_decode=false
+do_decode=true
+prep_submit=true
 
 tdnn_stage=0
 
@@ -24,13 +25,26 @@ tdnn_stage=0
 . parse_options.sh || exit 1;
 set -e
 
+
+if [ $stage -le -1 ]; then
+echo ============================================================================
+echo "                       NIST Data Prep                                     "
+echo ============================================================================
+   for x in build dev; do
+      local/NIST_norm_trans.sh $data $lang $x
+      echo "NIST data prep done!"
+   done
+fi
+
+
+if [ $stage -le 0 ]; then
 echo ============================================================================
 echo "                		Data Prep			                "
 echo ============================================================================
-
-if [ $stage -le 0 ]; then
-   local/data_prep.sh $data $lang data/
-   echo "Data prep done!"
+   for x in build dev; do
+      local/data_prep_norm.sh $data $lang $x data/
+      echo "Data prep done!"
+   done
 fi
 
 if [ $stage -le 1 ]; then
@@ -39,14 +53,15 @@ if [ $stage -le 1 ]; then
     make_mfcc_cmd=steps/make_mfcc_pitch.sh
   fi
   for x in build dev; do
-    $make_mfcc_cmd --cmd "$train_cmd" --nj $nj data/${lang}_${x} || exit 1;
-    steps/compute_cmvn_stats.sh data/${lang}_${x}  || exit 1;
+    $make_mfcc_cmd --cmd "$mfcc_cmd" --nj $nj data/${lang}_${x} exp/log/make_mfcc/$x exp/mfcc/$x || exit 1;
+    steps/compute_cmvn_stats.sh data/${lang}_${x} exp/log/make_mfcc/$x exp/mfcc/$x || exit 1;
   done
 fi
 
 if [ $stage -le 2 ]; then
   local/prep_lang.sh $prep_lang_opts $data $lang data/
 fi
+
 
 if [ $stage -le 3 ]; then
 echo ============================================================================
@@ -55,16 +70,6 @@ echo ===========================================================================
 
   steps/train_mono.sh --nj $nj --cmd "$train_cmd" \
                       data/${lang}_build data/lang_$lang exp/$lang/mono || exit 1
-  if $do_decode; then
-    utils/mkgraph.sh data/lang_${lang}_2g exp/$lang/mono \
-                     exp/$lang/mono/graph_2g || exit 1
-
-    for dset in dev; do
-      steps/decode.sh --nj $nj --cmd "$decode_cmd" \
-                      exp/$lang/mono/graph_2g data/${lang}_$dset \
-                      exp/$lang/mono/decode_2g_$dset &
-    done
-  fi
 fi
 
 if [ $stage -le 4 ]; then
@@ -105,6 +110,7 @@ if [ $stage -le 5 ]; then
   fi
 fi
 
+
 if [ $stage -le 6 ]; then
   echo ============================================================================
   echo "          Train tri3 LDA+MLLT+SAT system                                  "
@@ -125,10 +131,17 @@ if [ $stage -le 6 ]; then
         steps/decode_fmllr.sh --nj $nj --cmd "$decode_cmd" \
                               exp/$lang/tri3/graph_2g data/${lang}_$dset \
                               exp/$lang/tri3/decode_2g_$dset || exit 1
+
+        if $prep_submit; then
+           local/NIST_prep_submit.sh data/${lang}_$dset data/lang_${lang}_2g \
+              exp/$lang/tri3/decode_2g_$dset $data $lang $dset
+        fi
       done
     ) &
   fi
 fi
+
+exit
 
 if [ $stage -le 7 ]; then
   # TODO(rkjaran): multilang egs
@@ -137,7 +150,7 @@ if [ $stage -le 7 ]; then
   train_set=${lang}_build
   test_sets=${lang}_dev
   langs="default"
-  num_threads_ubm=32
+  num_threads_ubm=40
   src_langdir=data/lang_$lang
 
   if [[ $(hostname) == lr0* ]]; then
